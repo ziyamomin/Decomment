@@ -44,9 +44,10 @@ enum Statetype handleStartState(int c, int *line_number) {
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
     if (c == '*') {
-        return IN_COMMENT; /* Enter the in comment state without printing '/' */
+        print(' '); // Replace the '/' with a space
+        return IN_COMMENT;
     }
-    print('/'); /* Print the '/' that was prev read */
+    print('/'); // Print the '/' that was previously read
     if (c == '\n') {
         print(c);
         (*line_number)++;
@@ -61,7 +62,7 @@ enum Statetype handleInCommentState(int c, int *line_number) {
         return ASTERISK;
     }
     if (c == '\n') {
-        print('\n'); /* Preserve theline numbers */
+        print('\n'); // Preserve line numbers
         (*line_number)++;
     }
     if (c == EOF) {
@@ -72,13 +73,13 @@ enum Statetype handleInCommentState(int c, int *line_number) {
 
 enum Statetype handleAsteriskState(int c, int *line_number) {
     if (c == '/') {
-        return START; /* Exit comment state */
+        return START; // Exit comment state
     }
     if (c == '*') {
         return ASTERISK;
     }
     if (c == '\n') {
-        print('\n'); /* Preserve line numbers */
+        print('\n'); // Preserve line numbers
         (*line_number)++;
     }
     return IN_COMMENT;
