@@ -12,7 +12,8 @@ in the "Policies" web page (also available on armlab in the file
 ~cos217/AuthorizedSourcesList ) to this section of the readme file,
 and edit it as appropriate.
 
-
+I used lecture slides (including the futur lecture on pointers),
+precept handouts, and Ed Discussion posts.
 
 ------------------------------------------------------------------------
 What unauthorized sources of information did you use to complete the
@@ -41,13 +42,21 @@ Ziya Momin
 ------------------------------------------------------------------------
 What is your assessment of the assignment? Was it helpful? Was it fun?
 
-
+This assignment was very helpful in helping me get more comfortable
+programming in C as I did have prior experience in it and also
+going between testing on armlab and developing in VSCode. Moreover, the
+challenge was helpful as I learned about implementing pointers. Although
+debugging was challenging to successfully pass all of the corner cases,
+it was fun finding flaws in my logic. The assignment also helped clear
+up questions I previously had on DFAs.
 
 ------------------------------------------------------------------------
 (optional) What information can you provide about your submission that
 will help your grader to grade it in the most favorable light? In
 particular, what bugs are in your submission?
 
+No bugs! For the challenge portion of the assignment, I went the
+pointers route.
 
 
 ------------------------------------------------------------------------
