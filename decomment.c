@@ -48,6 +48,10 @@ enum Statetype handleForwardSlashState(int c) {
         print(' ');
         return IN_COMMENT;
     }
+    if (c == '/') {
+        print('/');
+        return START;
+    }
     print('/');
     print(c);
     return START;
