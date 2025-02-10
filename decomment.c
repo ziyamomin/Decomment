@@ -24,26 +24,28 @@ enum Statetype handleStartState(int c, int *line_number) {
     enum Statetype state = START;
     if (c == '/') {
         state = FORWARD_SLASH;
-    }
-    if (c == '"') {
+    } 
+    else if (c == '"') {
         print(c);
         state = STRING_LITERAL;
     }
-    if (c == '\'') {
+    else if (c == '\'') {
         print(c);
         state = CHAR_LITERAL;
     }
-    if (c == '\n') {
+    else if (c == '\n') {
         print(c);
         (*line_number)++;
+        state = START;
     } else {
         print(c);
+        state = START;
     }
     return state;
 }
 
 enum Statetype handleForwardSlashState(int c) {
-    enum Statetype state = FORWARD_SLASH;
+    enum Statetype state = START;
     if (c == '*') {
         print(' ');
         state = IN_COMMENT;
@@ -59,23 +61,24 @@ enum Statetype handleInCommentState(int c, int *line_number) {
     enum Statetype state = IN_COMMENT;
     if (c == '*') {
         state = ASTERISK;
-    }
-    if (c == '\n') {
+    } 
+    else if (c == '\n') {
         print(c);
         (*line_number)++;
-    }
-    if (c == EOF) {
+    } 
+    else if (c == EOF) {
         state = REJECT;
     }
     return state;
 }
 
 enum Statetype handleAsteriskState(int c) {
-    enum Statetype state = ASTERISK;
-    if(c == '/') {
+    enum Statetype state = IN_COMMENT;
+    if (c == '/') {
         state = START;
-    } else {
-        state = IN_COMMENT;
+    }
+    else if (c == '*') {
+        state = ASTERISK;
     }
     return state;
 }
@@ -83,14 +86,14 @@ enum Statetype handleAsteriskState(int c) {
 enum Statetype handleStringLiteral(int c, int *line_number) {
     enum Statetype state = STRING_LITERAL;
     if (c == '\\') {
-        print(c); 
+        print(c);
         state = ESCAPE;
-    }
-    if (c == '"') {
+    } 
+    else if (c == '"') {
         print(c);
         state = START;
-    }
-    if (c == '\n') {
+    } 
+    else if (c == '\n') {
         print(c);
         (*line_number)++;
     } else {
@@ -104,14 +107,14 @@ enum Statetype handleCharLiteral(int c, int *line_number) {
     if (c == '\\') {
         print(c);
         state = ESCAPE;
-    }
-    if (c == '\'') {
-        print(c); 
+    } 
+    else if (c == '\'') {
+        print(c);
         state = START;
-    }
-    if (c == '\n') {
-        print(c); 
-        *(line_number)++;
+    } 
+    else if (c == '\n') {
+        print(c);
+        (*line_number)++;
     } else {
         print(c);
     }
@@ -119,9 +122,8 @@ enum Statetype handleCharLiteral(int c, int *line_number) {
 }
 
 enum Statetype handleEscapeState(int c, enum Statetype previous_state) {
-    enum Statetype state = previous_state;
     print(c);
-    return state;
+    return previous_state;
 }
 
 int main(void) {
@@ -135,10 +137,18 @@ int main(void) {
         enum Statetype prev_state = state;
         
         switch (state) {
-            case START: state = handleStartState(c, &line_number); break;
-            case FORWARD_SLASH: state = handleForwardSlashState(c); break;
-            case IN_COMMENT: state = handleInCommentState(c, &line_number); break;
-            case ASTERISK: state = handleAsteriskState(c); break;
+            case START: 
+                state = handleStartState(c, &line_number);
+                break;
+            case FORWARD_SLASH: 
+                state = handleForwardSlashState(c);
+                break;
+            case IN_COMMENT: 
+                state = handleInCommentState(c, &line_number);
+                break;
+            case ASTERISK: 
+                state = handleAsteriskState(c);
+                break;
             case STRING_LITERAL: 
                 state = handleStringLiteral(c, &line_number);
                 previous_state = STRING_LITERAL;
@@ -147,8 +157,11 @@ int main(void) {
                 state = handleCharLiteral(c, &line_number);
                 previous_state = CHAR_LITERAL;
                 break;
-            case ESCAPE: state = handleEscapeState(c, previous_state); break;
-            case REJECT: return EXIT_FAILURE;
+            case ESCAPE: 
+                state = handleEscapeState(c, previous_state);
+                break;
+            case REJECT: 
+                return EXIT_FAILURE;
         }
 
         if (state == IN_COMMENT && prev_state != IN_COMMENT) {
