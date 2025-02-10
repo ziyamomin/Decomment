@@ -47,11 +47,10 @@ enum Statetype handleForwardSlashState(int c) {
         print(' ');
         return IN_COMMENT;
     }
-    if (c == '/') {
-        print('/');
-        return START;
-    }
     print('/');
+    if (c == '/') {
+        return FORWARD_SLASH;
+    }
     print(c);
     return START;
 }
@@ -70,48 +69,44 @@ enum Statetype handleInCommentState(int c, int *line_number) {
     return IN_COMMENT;
 }
 
-enum Statetype handleAsteriskState(int c) {
+enum Statetype handleAsteriskState(int c, int *line_number) {
     if (c == '/') {
         return START;
     }
     if (c == '*') {
         return ASTERISK;
     }
+    if (c == '\n') {
+        print(c);
+        (*line_number)++;
+    }
     return IN_COMMENT;
 }
 
 enum Statetype handleStringLiteral(int c, int *line_number) {
+    print(c);
     if (c == '\\') {
-        print(c);
         return ESCAPE_STRING;
     }
     if (c == '"') {
-        print(c);
         return START;
     }
     if (c == '\n') {
-        print(c);
         (*line_number)++;
-    } else {
-        print(c);
     }
     return STRING_LITERAL;
 }
 
 enum Statetype handleCharLiteral(int c, int *line_number) {
+    print(c);
     if (c == '\\') {
-        print(c);
         return ESCAPE_CHAR;
     }
     if (c == '\'') {
-        print(c);
         return START;
     }
     if (c == '\n') {
-        print(c);
         (*line_number)++;
-    } else {
-        print(c);
     }
     return CHAR_LITERAL;
 }
@@ -128,22 +123,21 @@ int main(void) {
     int comment_start_line = 0;
 
     while ((c = getchar()) != EOF) {
-        enum Statetype prev_state = state;
-
         switch (state) {
             case START:
                 state = handleStartState(c, &line_number);
                 break;
             case FORWARD_SLASH:
                 state = handleForwardSlashState(c);
-                if (state == IN_COMMENT)
+                if (state == IN_COMMENT) {
                     comment_start_line = line_number;
+                }
                 break;
             case IN_COMMENT:
                 state = handleInCommentState(c, &line_number);
                 break;
             case ASTERISK:
-                state = handleAsteriskState(c);
+                state = handleAsteriskState(c, &line_number);
                 break;
             case STRING_LITERAL:
                 state = handleStringLiteral(c, &line_number);
