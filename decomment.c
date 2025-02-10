@@ -21,7 +21,6 @@ void report_error(int line_number) {
     fprintf(stderr, "Error: line %d: unterminated comment\n", line_number);
 }
 
-/* In START state we are not inside any literal. */
 enum Statetype handleStartState(int c, int *line_number) {
     if (c == '/') {
         return FORWARD_SLASH;
