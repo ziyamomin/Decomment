@@ -44,14 +44,16 @@ enum Statetype handleStartState(int c, int *line_number) {
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
     if (c == '*') {
-        print(' ');
+        print(' '); /* Replace the '/' with a space */
         return IN_COMMENT;
     }
-    print('/');
-    if (c == '/') {
-        return FORWARD_SLASH;
+    print('/'); /* Print the '/' that was previously read */
+    if (c == '\n') {
+        print(c);
+        (*line_number)++;
+    } else {
+        print(c);
     }
-    print(c);
     return START;
 }
 
