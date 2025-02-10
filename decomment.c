@@ -36,8 +36,10 @@ enum Statetype handleStartState(int c, int *line_number) {
     else if (c == '\n') {
         print(c);
         (*line_number)++;
+        state = START;
     } else {
         print(c);
+        state = START;
     }
     return state;
 }
@@ -46,8 +48,6 @@ enum Statetype handleForwardSlashState(int c) {
     enum Statetype state = START;
     if (c == '*') {
         print(' ');
-        state = IN_COMMENT;
-    } else if (c == '/') {
         state = IN_COMMENT;
     } else {
         print('/');
@@ -161,7 +161,6 @@ int main(void) {
                 state = handleEscapeState(c, previous_state);
                 break;
             case REJECT: 
-                report_error(line_number);
                 return EXIT_FAILURE;
         }
 
