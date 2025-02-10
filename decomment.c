@@ -42,7 +42,7 @@ enum Statetype handleStartState(int c, int *line_number) {
     return START;
 }
 
-enum Statetype handleForwardSlashState(int c) {
+enum Statetype handleForwardSlashState(int c, int *line_number) {
     if (c == '*') {
         print(' ');
         return IN_COMMENT;
@@ -60,7 +60,7 @@ enum Statetype handleInCommentState(int c, int *line_number) {
         return ASTERISK;
     }
     if (c == '\n') {
-        print(c);
+        print('\n');
         (*line_number)++;
     }
     if (c == EOF) {
@@ -77,7 +77,7 @@ enum Statetype handleAsteriskState(int c, int *line_number) {
         return ASTERISK;
     }
     if (c == '\n') {
-        print(c);
+        print('\n');
         (*line_number)++;
     }
     return IN_COMMENT;
@@ -128,7 +128,7 @@ int main(void) {
                 state = handleStartState(c, &line_number);
                 break;
             case FORWARD_SLASH:
-                state = handleForwardSlashState(c);
+                state = handleForwardSlashState(c, &line_number);
                 if (state == IN_COMMENT) {
                     comment_start_line = line_number;
                 }
