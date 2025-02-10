@@ -1,0 +1,38 @@
+START (accept) <--- the start state
+    /: FORWARD_SLASH (print '/')
+    ": STRING_LITERAL (print '"')
+    ': CHARACTER_LITERAL (print ''')
+    \n: START (print '\n' and increment the line number global variable)
+    other: START (print the current character)
+
+FORWARD_SLASH:
+    *: INSIDE_POTENTIAL_COMMENT (replace with a single space)
+    other: START (print '/' and the current charcater)
+
+INSIDE_POTENTIAL_COMMENT:
+    *: ASTERISK
+    EOF: REJECT (report "Error: line X: unterminated comment")
+    \n: INSIDE_POTENTIAL_COMMENT (increment the line number global variable by 1)
+    other: INSIDE_POTENTIAL_COMMENT
+
+ASTERISK:
+    /: START
+    *: ASTERISK
+    other: INSIDE_POTENTIAL_COMMENT
+
+STRING_LITERAL:
+    \: ESCAPE (print '\')
+    ": START (print '"')
+    \n: STRING_LITERAL (print '\n' and increment the line number global variable by 1)
+    other: STRING_LITERAL (print the current chatacter)
+
+CHARACTER_LITERAL:
+    \: ESCAPE (print '\')
+    ': START (print ''')
+    \n: CHARACTER_LITERAL (print '\n' and increment the line number global variable by 1)
+    other: CHARACTER_LITERAL (print the current character)
+
+ESCAPE:
+    anything: previous state (print the current character)
+
+REJECT (reject)
