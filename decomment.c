@@ -48,8 +48,8 @@ enum Statetype handleForwardSlashState(int c) {
         return IN_COMMENT;
     }
     print('/');
-    if (c == '/') {
-        return FORWARD_SLASH;
+    if (c == EOF) {
+        return START;
     }
     print(c);
     return START;
@@ -80,10 +80,18 @@ enum Statetype handleAsteriskState(int c, int *line_number) {
         print(c);
         (*line_number)++;
     }
+    if (c == EOF) {
+        return REJECT;
+    }
     return IN_COMMENT;
 }
 
 enum Statetype handleStringLiteral(int c, int *line_number) {
+    if (c == '\n') {
+        print(c);
+        (*line_number)++;
+        return STRING_LITERAL;
+    }
     print(c);
     if (c == '\\') {
         return ESCAPE_STRING;
@@ -91,22 +99,21 @@ enum Statetype handleStringLiteral(int c, int *line_number) {
     if (c == '"') {
         return START;
     }
-    if (c == '\n') {
-        (*line_number)++;
-    }
     return STRING_LITERAL;
 }
 
 enum Statetype handleCharLiteral(int c, int *line_number) {
+    if (c == '\n') {
+        print(c);
+        (*line_number)++;
+        return CHAR_LITERAL;
+    }
     print(c);
     if (c == '\\') {
         return ESCAPE_CHAR;
     }
     if (c == '\'') {
         return START;
-    }
-    if (c == '\n') {
-        (*line_number)++;
     }
     return CHAR_LITERAL;
 }
@@ -157,7 +164,9 @@ int main(void) {
         }
     }
 
-    if (state == IN_COMMENT || state == ASTERISK) {
+    if (state == FORWARD_SLASH) {
+        print('/');
+    } else if (state == IN_COMMENT || state == ASTERISK) {
         report_error(comment_start_line);
         return EXIT_FAILURE;
     }
