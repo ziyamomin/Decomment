@@ -10,7 +10,8 @@ enum Statetype {
     CHAR_LITERAL,
     ESCAPE_STRING,
     ESCAPE_CHAR,
-    REJECT
+    REJECT,
+    SINGLE_LINE_COMMENT
 };
 
 void print(char c) {
@@ -47,13 +48,13 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
         print(' ');
         return IN_COMMENT;
     }
-    print('/');
-    if (c == '\n') {
-        print(c);
-        (*line_number)++;
-    } else {
-        print(c);
+    if (c == '/') {  // Handle single-line comments
+        print(' ');
+        return SINGLE_LINE_COMMENT;
     }
+    print('/');
+    print(c);
+    if (c == '\n') (*line_number)++;
     return START;
 }
 
@@ -115,6 +116,17 @@ enum Statetype handleEscapeState(int c, enum Statetype previous_state) {
     return previous_state;
 }
 
+enum Statetype handleSingleLineComment(int c, int *line_number) {
+    if (c == '\n') {
+        print(c);
+        (*line_number)++;
+        return START;
+    }
+    print(' ');
+    return SINGLE_LINE_COMMENT;
+}
+
+
 int main(void) {
     int c;
     enum Statetype state = START;
@@ -150,6 +162,10 @@ int main(void) {
             case ESCAPE_CHAR:
                 state = handleEscapeState(c, CHAR_LITERAL);
                 break;
+            case SINGLE_LINE_COMMENT:
+                state = handleSingleLineComment(c, &line_number);
+                break;
+
             case REJECT:
                 break;
         }
