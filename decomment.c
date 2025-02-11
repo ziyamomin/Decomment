@@ -43,9 +43,6 @@ enum Statetype handleStartState(int c, int *line_number) {
 }
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
-    /* if (c == EOF) {
-        print('/');
-    } */
     if (c == '*') {
         print(' ');
         return IN_COMMENT;
@@ -54,20 +51,23 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
         print('/');
         return FORWARD_SLASH; 
     }
-    print('/');
     if (c == '\n') {
+        print('/');
         print(c);
         (*line_number)++;
         return START;
     }
     if (c == '"') {
+        print('/');
         print(c);
         return STRING_LITERAL;
     }
     if (c == '\'') {
+        print('/');
         print(c);
         return CHAR_LITERAL;
     } else {
+        print('/');
         print(c);
     }
     return START;
@@ -81,6 +81,7 @@ enum Statetype handleInCommentState(int c, int *line_number) {
     if (c == '\n') {
         print(c);
         (*line_number)++;
+        return IN_COMMENT;
     }
     return IN_COMMENT;
 }
@@ -95,39 +96,46 @@ enum Statetype handleAsteriskState(int c, int *line_number) {
     if (c == '\n') {
         print(c);
         (*line_number)++;
+        return IN_COMMENT;
     }
     return IN_COMMENT;
 }
 
 enum Statetype handleStringLiteral(int c, int *line_number) {
-    print(c);
     if (c == '\\') {
+        print(c);
         return ESCAPE_STRING;
     }
     if (c == '"') {
+        print(c);
         return START;
     }
     if (c == '\n') {
-        (*line_number)++;
-    } /* else {
         print(c);
-    } */
+        (*line_number)++;
+        return STRING_LITERAL;
+    } else {
+        print(c);
+    }
     return STRING_LITERAL;
 }
 
 enum Statetype handleCharLiteral(int c, int *line_number) {
-    print(c);
     if (c == '\\') {
+        print(c);
         return ESCAPE_CHAR;
     }
     if (c == '\'') {
+        print(c);
         return START;
     }
     if (c == '\n') {
-        (*line_number)++;
-    } /* lse {
         print(c);
-    } */
+        (*line_number)++;
+        return CHAR_LITERAL;
+    } else {
+        print(c);
+    }
     return CHAR_LITERAL;
 }
 
