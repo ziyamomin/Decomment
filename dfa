@@ -25,21 +25,21 @@ ASTERISK:
     other: IN_COMMENT
 
 STRING_LITERAL:
-    \: ESCAPE_STRING (print \ character)
+    \: ESCAPE_STRING
     ": START (print " character)
     \n: STRING_LITERAL (print '\n' and increment the line number pointer variable by 1)
     other: STRING_LITERAL (print the current chatacter)
 
 CHAR_LITERAL:
-    \: ESCAPE_CHAR (print \ character)
+    \: ESCAPE_CHAR
     ': START (print ' character)
     \n: CHAR_LITERAL (print \n and increment the line number pointer variable by 1)
     other: CHAR_LITERAL (print the current character)
 
 ESCAPE_STRING:
-    anything: STRING_LITERAL (print the current character) 
+    anything: STRING_LITERAL (print the \ character) 
 
 ESCAPE_CHAR:
-    anything: CHAR_LITERAL (print the current character)
+    anything: CHAR_LITERAL (print the \ character)
 
 REJECT (reject)
