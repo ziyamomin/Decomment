@@ -22,7 +22,9 @@ void report_error(int line_number) {
 }
 
 enum Statetype handleStartState(int c, int *line_number) {
-    if (c == '/') return FORWARD_SLASH;
+    if (c == '/') {
+        return FORWARD_SLASH;
+    }
     if (c == '"') {
         print(c);
         return STRING_LITERAL;
@@ -31,12 +33,14 @@ enum Statetype handleStartState(int c, int *line_number) {
         print(c);
         return CHAR_LITERAL;
     }
-    print(c);
-    if (c == '\n') (*line_number)++;
+    if (c == '\n') {
+        print(c);
+        (*line_number)++;
+    } else {
+        print(c);
+    }
     return START;
 }
-
-
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
     if (c == '*') {
@@ -151,10 +155,6 @@ int main(void) {
             case REJECT:
                 break;
         }
-    }
-
-    if (state == FORWARD_SLASH) {
-        print('/');
     }
 
     if (state == IN_COMMENT || state == ASTERISK) {
