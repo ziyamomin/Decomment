@@ -47,6 +47,9 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
         print(' ');
         return IN_COMMENT;
     }
+    if (c == '/') {
+        return FORWARD_SLASH;
+    }
     print('/');
     if (c == '\n') {
         print(c);
@@ -56,6 +59,7 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
     }
     return START;
 }
+
 
 enum Statetype handleInCommentState(int c, int *line_number) {
     if (c == '*') {
@@ -67,6 +71,7 @@ enum Statetype handleInCommentState(int c, int *line_number) {
     }
     return IN_COMMENT;
 }
+
 
 enum Statetype handleAsteriskState(int c, int *line_number) {
     if (c == '/') {
@@ -82,6 +87,7 @@ enum Statetype handleAsteriskState(int c, int *line_number) {
     return IN_COMMENT;
 }
 
+// In the handleStringLiteral function:
 enum Statetype handleStringLiteral(int c, int *line_number) {
     print(c);
     if (c == '\\') {
@@ -96,6 +102,7 @@ enum Statetype handleStringLiteral(int c, int *line_number) {
     return STRING_LITERAL;
 }
 
+// Similarly, handleCharLiteral:
 enum Statetype handleCharLiteral(int c, int *line_number) {
     print(c);
     if (c == '\\') {
@@ -109,6 +116,7 @@ enum Statetype handleCharLiteral(int c, int *line_number) {
     }
     return CHAR_LITERAL;
 }
+
 
 enum Statetype handleEscapeState(int c, enum Statetype previous_state) {
     print(c);
