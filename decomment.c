@@ -23,7 +23,6 @@ void report_error(int line_number) {
 
 enum Statetype handleStartState(int c, int *line_number) {
     if (c == '/') {
-        print("in forward slash");
         return FORWARD_SLASH;
     }
     if (c == '"') {
