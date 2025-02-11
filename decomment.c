@@ -23,6 +23,7 @@ void report_error(int line_number) {
 
 enum Statetype handleStartState(int c, int *line_number) {
     if (c == '/') {
+        print("in forward slash");
         return FORWARD_SLASH;
     }
     if (c == '"') {
@@ -43,10 +44,10 @@ enum Statetype handleStartState(int c, int *line_number) {
 }
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
-    if(c == EOF) {
-        return FORWARD_SLASH;
-    }
     // if forward slash is the last character read then print the forward slash
+    /* if (c == EOF) {
+        print('/');
+    } */
     if (c == '*') {
         print(' ');
         return IN_COMMENT;
