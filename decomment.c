@@ -55,7 +55,12 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
     if (c == '\n') {
         print(c);
         (*line_number)++;
-    } else {
+    }
+    if (c == '"') {
+        print(c);
+        return STRING_LITERAL;
+    }
+    else {
         print(c);
     }
     return START;
@@ -107,6 +112,9 @@ enum Statetype handleCharLiteral(int c, int *line_number) {
     print(c);
     if (c == '\\') {
         return ESCAPE_CHAR;
+    }
+    if (c == '"') {
+        return START;
     }
     if (c == '\'') {
         return START;
