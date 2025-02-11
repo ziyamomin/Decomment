@@ -43,6 +43,7 @@ enum Statetype handleStartState(int c, int *line_number) {
 }
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
+    // if forward slash is the last character read then print the forward slash
     if (c == '*') {
         print(' ');
         return IN_COMMENT;
@@ -64,8 +65,7 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
     if (c == '\'') {
         print(c);
         return CHAR_LITERAL;
-    }
-    else {
+    } else {
         print(c);
     }
     return START;
@@ -172,6 +172,10 @@ int main(void) {
             case REJECT:
                 break;
         }
+    }
+
+    if (state == FORWARD_SLASH) {
+        print('/');
     }
 
     if (state == IN_COMMENT || state == ASTERISK) {
