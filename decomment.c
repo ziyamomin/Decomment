@@ -55,6 +55,7 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
     if (c == '\n') {
         print(c);
         (*line_number)++;
+        return START;
     }
     if (c == '"') {
         print(c);
