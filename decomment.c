@@ -117,9 +117,6 @@ enum Statetype handleCharLiteral(int c, int *line_number) {
     if (c == '\\') {
         return ESCAPE_CHAR;
     }
-    if (c == '"') {
-        return START;
-    }
     if (c == '\'') {
         return START;
     }
