@@ -43,15 +43,16 @@ enum Statetype handleStartState(int c, int *line_number) {
 }
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
+    // If we are inside a string or char literal, treat '//' as regular code
     if (c == '*') {
         print(' ');
-        return IN_COMMENT;
+        return IN_COMMENT;  // Start a comment
     }
     if (c == '/') {
-        // Handle "//" only if not inside a string or char literal
+        // If we are not inside a string or char literal, handle as comment start
         return FORWARD_SLASH;
     }
-    print('/');
+    print('/');  // Treat this as part of the regular code if not part of a comment
     if (c == '\n') {
         print(c);
         (*line_number)++;
@@ -60,6 +61,7 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
     }
     return START;
 }
+
 
 enum Statetype handleInCommentState(int c, int *line_number, int *comment_start_line) {
     if (c == '*') {
