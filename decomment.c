@@ -10,7 +10,6 @@ enum Statetype {
     CHAR_LITERAL,
     ESCAPE_STRING,
     ESCAPE_CHAR,
-    SINGLE_LINE_COMMENT,
     REJECT
 };
 
@@ -23,7 +22,9 @@ void report_error(int line_number) {
 }
 
 enum Statetype handleStartState(int c, int *line_number) {
-    if (c == '/') return FORWARD_SLASH;
+    if (c == '/') {
+        return FORWARD_SLASH;
+    }
     if (c == '"') {
         print(c);
         return STRING_LITERAL;
@@ -32,8 +33,12 @@ enum Statetype handleStartState(int c, int *line_number) {
         print(c);
         return CHAR_LITERAL;
     }
-    print(c);
-    if (c == '\n') (*line_number)++;
+    if (c == '\n') {
+        print(c);
+        (*line_number)++;
+    } else {
+        print(c);
+    }
     return START;
 }
 
@@ -42,67 +47,66 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
         print(' ');
         return IN_COMMENT;
     }
-    if (c == '/') {
-       // print(' ');
-        return SINGLE_LINE_COMMENT;
-    }
     print('/');
-    print(c);
-   // if (c == '"') return STRING_LITERAL;  //Don't need this as string and char literals won't start in this state
-   // if (c == '\'') return CHAR_LITERAL; //same as above line
-    if (c == '\n') (*line_number)++;
-    return START;
-}
-
-enum Statetype handleInCommentState(int c, int *line_number) {
-    if (c == '*') return ASTERISK;
     if (c == '\n') {
         print(c);
         (*line_number)++;
     } else {
-        print(' '); // Replacing the contents of the comment with spaces.
+        print(c);
+    }
+    return START;
+}
+
+enum Statetype handleInCommentState(int c, int *line_number) {
+    if (c == '*') {
+        return ASTERISK;
+    }
+    if (c == '\n') {
+        print(c);
+        (*line_number)++;
     }
     return IN_COMMENT;
 }
 
 enum Statetype handleAsteriskState(int c, int *line_number) {
     if (c == '/') {
-        print(' '); // Add a space after the comment ends.
         return START;
     }
-    if (c == '*') return ASTERISK;
+    if (c == '*') {
+        return ASTERISK;
+    }
     if (c == '\n') {
         print(c);
         (*line_number)++;
-    } else {
-        print(' ');  //Keep replacing the contents of the comment with spaces
     }
     return IN_COMMENT;
 }
 
-enum Statetype handleSingleLineComment(int c, int *line_number) {
-    if (c == '\n') {
-        print(c);
-        (*line_number)++;
-        return START;
-    }
-    print(' '); // Replacing the contents of the comment with spaces.
-    return SINGLE_LINE_COMMENT;
-}
-
 enum Statetype handleStringLiteral(int c, int *line_number) {
     print(c);
-    if (c == '\\') return ESCAPE_STRING;
-    if (c == '"') return START;
-    if (c == '\n') (*line_number)++;
+    if (c == '\\') {
+        return ESCAPE_STRING;
+    }
+    if (c == '"') {
+        return START;
+    }
+    if (c == '\n') {
+        (*line_number)++;
+    }
     return STRING_LITERAL;
 }
 
 enum Statetype handleCharLiteral(int c, int *line_number) {
     print(c);
-    if (c == '\\') return ESCAPE_CHAR;
-    if (c == '\'') return START;
-    if (c == '\n') (*line_number)++;
+    if (c == '\\') {
+        return ESCAPE_CHAR;
+    }
+    if (c == '\'') {
+        return START;
+    }
+    if (c == '\n') {
+        (*line_number)++;
+    }
     return CHAR_LITERAL;
 }
 
@@ -134,9 +138,6 @@ int main(void) {
             case ASTERISK:
                 state = handleAsteriskState(c, &line_number);
                 break;
-            case SINGLE_LINE_COMMENT:
-                state = handleSingleLineComment(c, &line_number);
-                break;
             case STRING_LITERAL:
                 state = handleStringLiteral(c, &line_number);
                 break;
@@ -152,10 +153,6 @@ int main(void) {
             case REJECT:
                 break;
         }
-    }
-
-    if (state == FORWARD_SLASH) {
-        print('/');
     }
 
     if (state == IN_COMMENT || state == ASTERISK) {
