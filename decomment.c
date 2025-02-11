@@ -43,13 +43,13 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
         return IN_COMMENT;
     }
     if (c == '/') {
-        print(' ');
+       // print(' ');
         return SINGLE_LINE_COMMENT;
     }
     print('/');
     print(c);
-    if (c == '"') return STRING_LITERAL;
-    if (c == '\'') return CHAR_LITERAL;
+   // if (c == '"') return STRING_LITERAL;  //Don't need this as string and char literals won't start in this state
+   // if (c == '\'') return CHAR_LITERAL; //same as above line
     if (c == '\n') (*line_number)++;
     return START;
 }
@@ -60,19 +60,22 @@ enum Statetype handleInCommentState(int c, int *line_number) {
         print(c);
         (*line_number)++;
     } else {
-        print(' ');
+        print(' '); // Replacing the contents of the comment with spaces.
     }
     return IN_COMMENT;
 }
 
 enum Statetype handleAsteriskState(int c, int *line_number) {
-    if (c == '/') return START;
+    if (c == '/') {
+        print(' '); // Add a space after the comment ends.
+        return START;
+    }
     if (c == '*') return ASTERISK;
     if (c == '\n') {
         print(c);
         (*line_number)++;
     } else {
-	print(' ');
+        print(' ');  //Keep replacing the contents of the comment with spaces
     }
     return IN_COMMENT;
 }
@@ -83,7 +86,7 @@ enum Statetype handleSingleLineComment(int c, int *line_number) {
         (*line_number)++;
         return START;
     }
-    print(' ');
+    print(' '); // Replacing the contents of the comment with spaces.
     return SINGLE_LINE_COMMENT;
 }
 
