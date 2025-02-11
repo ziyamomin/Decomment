@@ -49,7 +49,7 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
     }
     if (c == '/') {
         print('/');
-        return START; 
+        return FORWARD_SLASH; 
     }
     print('/');
     if (c == '\n') {
