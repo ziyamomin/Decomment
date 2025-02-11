@@ -61,8 +61,8 @@ enum Statetype handleStartState(int c, int *line_number, int *comment_start_line
 }
 
 /* This function handles the FORWARD_SLASH state, which is entered when a '/' is encountered.
- * In this state, the program checks if the '/' is part of a comment (i.e., starting a '/*' for multi-line comments)
- * or if it's simply a part of a line comment (i.e., '//' for single-line comments).
+ * In this state, the program checks if the '/' is part of a comment
+ * or if it's simply a part of a line comment
  * If another '/' is encountered, the state repeats to handle line comments ('//'). 
  * If a newline is encountered, the program moves back to the START state.
  * If the program detects the start of a comment, it updates the comment_start_line parameter to record the line number where the comment begins.
