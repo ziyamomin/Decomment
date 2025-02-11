@@ -60,6 +60,10 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
         print(c);
         return STRING_LITERAL;
     }
+    if (c == '\'') {
+        print(c);
+        return CHAR_LITERAL;
+    }
     else {
         print(c);
     }
