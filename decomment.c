@@ -26,11 +26,11 @@ enum Statetype handleStartState(int c, int *line_number) {
         return FORWARD_SLASH;
     }
     if (c == '"') {
-        print(c);
+        print(c);  // print the quote to output
         return STRING_LITERAL;
     }
     if (c == '\'') {
-        print(c);
+        print(c);  // print the quote to output
         return CHAR_LITERAL;
     }
     if (c == '\n') {
@@ -48,6 +48,7 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
         return IN_COMMENT;
     }
     if (c == '/') {
+        // Handle "//" only if not inside a string or char literal
         return FORWARD_SLASH;
     }
     print('/');
@@ -60,8 +61,7 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
     return START;
 }
 
-
-enum Statetype handleInCommentState(int c, int *line_number) {
+enum Statetype handleInCommentState(int c, int *line_number, int *comment_start_line) {
     if (c == '*') {
         return ASTERISK;
     }
@@ -72,10 +72,9 @@ enum Statetype handleInCommentState(int c, int *line_number) {
     return IN_COMMENT;
 }
 
-
-enum Statetype handleAsteriskState(int c, int *line_number) {
+enum Statetype handleAsteriskState(int c, int *line_number, int *comment_start_line) {
     if (c == '/') {
-        return START;
+        return START;  // End of the comment
     }
     if (c == '*') {
         return ASTERISK;
@@ -87,14 +86,13 @@ enum Statetype handleAsteriskState(int c, int *line_number) {
     return IN_COMMENT;
 }
 
-// In the handleStringLiteral function:
 enum Statetype handleStringLiteral(int c, int *line_number) {
     print(c);
     if (c == '\\') {
-        return ESCAPE_STRING;
+        return ESCAPE_STRING;  // handle escape sequences like \" or \n
     }
     if (c == '"') {
-        return START;
+        return START;  // end of string literal
     }
     if (c == '\n') {
         (*line_number)++;
@@ -102,21 +100,19 @@ enum Statetype handleStringLiteral(int c, int *line_number) {
     return STRING_LITERAL;
 }
 
-// Similarly, handleCharLiteral:
 enum Statetype handleCharLiteral(int c, int *line_number) {
     print(c);
     if (c == '\\') {
-        return ESCAPE_CHAR;
+        return ESCAPE_CHAR;  // handle escape sequences like \' or \n
     }
     if (c == '\'') {
-        return START;
+        return START;  // end of character literal
     }
     if (c == '\n') {
         (*line_number)++;
     }
     return CHAR_LITERAL;
 }
-
 
 enum Statetype handleEscapeState(int c, enum Statetype previous_state) {
     print(c);
@@ -141,10 +137,10 @@ int main(void) {
                 }
                 break;
             case IN_COMMENT:
-                state = handleInCommentState(c, &line_number);
+                state = handleInCommentState(c, &line_number, &comment_start_line);
                 break;
             case ASTERISK:
-                state = handleAsteriskState(c, &line_number);
+                state = handleAsteriskState(c, &line_number, &comment_start_line);
                 break;
             case STRING_LITERAL:
                 state = handleStringLiteral(c, &line_number);
@@ -167,6 +163,6 @@ int main(void) {
         report_error(comment_start_line);
         return EXIT_FAILURE;
     }
-
+    
     return EXIT_SUCCESS;
 }
