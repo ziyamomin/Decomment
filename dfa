@@ -2,38 +2,44 @@ START (accept) <--- the start state
     /: FORWARD_SLASH
     ": STRING_LITERAL (print " character)
     ': CHAR_LITERAL (print ' character)
-    \n: START (print \n and increment the line number pointer variable by 1)
+    \n: START (print \n and increment the line number pointer
+    variable by 1)
     other: START (print the current character)
 
 FORWARD_SLASH:
     *: IN_COMMENT (replace * with a single space)
     /: FORWARD_SLASH (print /)
-    \n: START (print / followed by \n and increment the line number pointer variable by 1)
+    \n: START (print / followed by \n and increment the line number
+    pointer variable by 1)
     ": STRING_LITERAL (print / followed by " character)
     ': CHAR_LITERAL (print / followed by ' character)
     other: START (print / followed by the current charcater)
 
 IN_COMMENT:
     *: ASTERISK
-    \n: IN_COMMENT (print \n and increment the line number pointer variable by 1)
+    \n: IN_COMMENT (print \n and increment the line number pointer
+    variable by 1)
     other: IN_COMMENT
 
 ASTERISK:
     /: START
     *: ASTERISK
-    \n: IN_COMMENT (print \n and increment the line number pointer variable by 1)
+    \n: IN_COMMENT (print \n and increment the line number pointer
+    variable by 1)
     other: IN_COMMENT
 
 STRING_LITERAL:
     \: ESCAPE_STRING
     ": START (print " character)
-    \n: STRING_LITERAL (print '\n' and increment the line number pointer variable by 1)
+    \n: STRING_LITERAL (print '\n' and increment the line number pointer
+    variable by 1)
     other: STRING_LITERAL (print the current chatacter)
 
 CHAR_LITERAL:
     \: ESCAPE_CHAR
     ': START (print ' character)
-    \n: CHAR_LITERAL (print \n and increment the line number pointer variable by 1)
+    \n: CHAR_LITERAL (print \n and increment the line number pointer
+    variable by 1)
     other: CHAR_LITERAL (print the current character)
 
 ESCAPE_STRING:
