@@ -79,6 +79,9 @@ enum Statetype handleInCommentState(int c, int *line_number) {
         print(c);
         (*line_number)++;
     }
+    if (c == EOF) {
+        print(c);
+    }
     return IN_COMMENT;
 }
 
