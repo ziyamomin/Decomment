@@ -106,7 +106,16 @@ enum Statetype handleStringLiteral(int c, int *line_number) {
     }
     if (c == '\n') {
         (*line_number)++;
-    } /* else {
+    }
+    if (c == '/') {
+        print(c);
+        return STRING_LITERAL;
+    }
+    if (c == '*') {
+        print(c);
+        return STRING_LITERAL;
+    }
+     /* else {
         print(c);
     } */
     return STRING_LITERAL;
@@ -125,7 +134,16 @@ enum Statetype handleCharLiteral(int c, int *line_number) {
     }
     if (c == '\n') {
         (*line_number)++;
-    } /* lse {
+    } 
+    if (c == '/') {
+        print(c);
+        return CHAR_LITERAL;
+    }
+    if (c == '*') {
+        print(c);
+        return CHAR_LITERAL;
+    }
+    /* else {
         print(c);
     } */
     return CHAR_LITERAL;
