@@ -9,8 +9,7 @@ enum Statetype {
     STRING_LITERAL,
     CHAR_LITERAL,
     ESCAPE_STRING,
-    ESCAPE_CHAR,
-    REJECT
+    ESCAPE_CHAR
 };
 
 void print(char c) {
@@ -21,8 +20,8 @@ void report_error(int line_number) {
     fprintf(stderr, "Error: line %d: unterminated comment\n", line_number);
 }
 
-enum Statetype handleStartState(int c, int *line_number) {
-    if (c == '/') {
+enum Statetype handleStartState(int c, int *line_number, enum Statetype current_state) {
+    if (current_state == START && c == '/') {
         return FORWARD_SLASH;
     }
     if (c == '"') {
@@ -39,36 +38,33 @@ enum Statetype handleStartState(int c, int *line_number) {
     } else {
         print(c);
     }
-    return START;
+    return current_state;
 }
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
     if (c == '*') {
-        print(' ');
         return IN_COMMENT;
     }
-    print('/');
+    putchar('/');
+    if (c == '\n') {
+        (*line_number)++;
+        putchar(c);
+        return START;
+    }
     print(c);
-    
-    if (c == '"') return STRING_LITERAL;
-    if (c == '\'') return CHAR_LITERAL;
-    if (c == '\n') (*line_number)++;
-    
     return START;
 }
 
-
 enum Statetype handleInCommentState(int c, int *line_number) {
-    if (c == '*') return ASTERISK;
+    if (c == '*') {
+        return ASTERISK;
+    }
     if (c == '\n') {
         print(c);
         (*line_number)++;
-    } else {
-        print(' ');
     }
     return IN_COMMENT;
 }
-
 
 enum Statetype handleAsteriskState(int c, int *line_number) {
     if (c == '/') {
@@ -122,11 +118,13 @@ int main(void) {
     enum Statetype state = START;
     int line_number = 1;
     int comment_start_line = 0;
+    enum Statetype prev_state = START;
 
     while ((c = getchar()) != EOF) {
+        prev_state = state;
         switch (state) {
             case START:
-                state = handleStartState(c, &line_number);
+                state = handleStartState(c, &line_number, state);
                 break;
             case FORWARD_SLASH:
                 state = handleForwardSlashState(c, &line_number);
@@ -151,8 +149,6 @@ int main(void) {
                 break;
             case ESCAPE_CHAR:
                 state = handleEscapeState(c, CHAR_LITERAL);
-                break;
-            case REJECT:
                 break;
         }
     }
