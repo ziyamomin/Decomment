@@ -10,8 +10,8 @@ enum Statetype {
     CHAR_LITERAL,
     ESCAPE_STRING,
     ESCAPE_CHAR,
-    REJECT,
-    SINGLE_LINE_COMMENT
+    SINGLE_LINE_COMMENT,
+    REJECT
 };
 
 void print(char c) {
@@ -23,9 +23,7 @@ void report_error(int line_number) {
 }
 
 enum Statetype handleStartState(int c, int *line_number) {
-    if (c == '/') {
-        return FORWARD_SLASH;
-    }
+    if (c == '/') return FORWARD_SLASH;
     if (c == '"') {
         print(c);
         return STRING_LITERAL;
@@ -34,12 +32,8 @@ enum Statetype handleStartState(int c, int *line_number) {
         print(c);
         return CHAR_LITERAL;
     }
-    if (c == '\n') {
-        print(c);
-        (*line_number)++;
-    } else {
-        print(c);
-    }
+    print(c);
+    if (c == '\n') (*line_number)++;
     return START;
 }
 
@@ -48,72 +42,39 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
         print(' ');
         return IN_COMMENT;
     }
-    if (c == '/') {  // Handle single-line comments
+    if (c == '/') {
         print(' ');
         return SINGLE_LINE_COMMENT;
     }
     print('/');
     print(c);
+    if (c == '"') return STRING_LITERAL;
+    if (c == '\'') return CHAR_LITERAL;
     if (c == '\n') (*line_number)++;
     return START;
 }
 
 enum Statetype handleInCommentState(int c, int *line_number) {
-    if (c == '*') {
-        return ASTERISK;
-    }
+    if (c == '*') return ASTERISK;
     if (c == '\n') {
         print(c);
         (*line_number)++;
+    } else {
+        print(' ');
     }
     return IN_COMMENT;
 }
 
 enum Statetype handleAsteriskState(int c, int *line_number) {
-    if (c == '/') {
-        return START;
-    }
-    if (c == '*') {
-        return ASTERISK;
-    }
+    if (c == '/') return START;
+    if (c == '*') return ASTERISK;
     if (c == '\n') {
         print(c);
         (*line_number)++;
+    } else {
+	print(' ');
     }
     return IN_COMMENT;
-}
-
-enum Statetype handleStringLiteral(int c, int *line_number) {
-    print(c);
-    if (c == '\\') {
-        return ESCAPE_STRING;
-    }
-    if (c == '"') {
-        return START;
-    }
-    if (c == '\n') {
-        (*line_number)++;
-    }
-    return STRING_LITERAL;
-}
-
-enum Statetype handleCharLiteral(int c, int *line_number) {
-    print(c);
-    if (c == '\\') {
-        return ESCAPE_CHAR;
-    }
-    if (c == '\'') {
-        return START;
-    }
-    if (c == '\n') {
-        (*line_number)++;
-    }
-    return CHAR_LITERAL;
-}
-
-enum Statetype handleEscapeState(int c, enum Statetype previous_state) {
-    print(c);
-    return previous_state;
 }
 
 enum Statetype handleSingleLineComment(int c, int *line_number) {
@@ -126,6 +87,26 @@ enum Statetype handleSingleLineComment(int c, int *line_number) {
     return SINGLE_LINE_COMMENT;
 }
 
+enum Statetype handleStringLiteral(int c, int *line_number) {
+    print(c);
+    if (c == '\\') return ESCAPE_STRING;
+    if (c == '"') return START;
+    if (c == '\n') (*line_number)++;
+    return STRING_LITERAL;
+}
+
+enum Statetype handleCharLiteral(int c, int *line_number) {
+    print(c);
+    if (c == '\\') return ESCAPE_CHAR;
+    if (c == '\'') return START;
+    if (c == '\n') (*line_number)++;
+    return CHAR_LITERAL;
+}
+
+enum Statetype handleEscapeState(int c, enum Statetype previous_state) {
+    print(c);
+    return previous_state;
+}
 
 int main(void) {
     int c;
@@ -150,6 +131,9 @@ int main(void) {
             case ASTERISK:
                 state = handleAsteriskState(c, &line_number);
                 break;
+            case SINGLE_LINE_COMMENT:
+                state = handleSingleLineComment(c, &line_number);
+                break;
             case STRING_LITERAL:
                 state = handleStringLiteral(c, &line_number);
                 break;
@@ -162,13 +146,13 @@ int main(void) {
             case ESCAPE_CHAR:
                 state = handleEscapeState(c, CHAR_LITERAL);
                 break;
-            case SINGLE_LINE_COMMENT:
-                state = handleSingleLineComment(c, &line_number);
-                break;
-
             case REJECT:
                 break;
         }
+    }
+
+    if (state == FORWARD_SLASH) {
+        print('/');
     }
 
     if (state == IN_COMMENT || state == ASTERISK) {
