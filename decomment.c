@@ -163,6 +163,6 @@ int main(void) {
         report_error(comment_start_line);
         return EXIT_FAILURE;
     }
-    
+
     return EXIT_SUCCESS;
 }
