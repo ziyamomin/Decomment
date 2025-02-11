@@ -43,6 +43,9 @@ enum Statetype handleStartState(int c, int *line_number) {
 }
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
+    if(c == EOF) {
+        return FORWARD_SLASH;
+    }
     // if forward slash is the last character read then print the forward slash
     if (c == '*') {
         print(' ');
@@ -68,6 +71,7 @@ enum Statetype handleForwardSlashState(int c, int *line_number) {
     } else {
         print(c);
     }
+    // if last character is a slash don't make it return to start
     return START;
 }
 
