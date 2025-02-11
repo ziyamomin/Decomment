@@ -121,9 +121,9 @@ enum Statetype handleCharLiteral(int c, int *line_number) {
     }
     if (c == '\n') {
         (*line_number)++;
-    } else {
+    } /* lse {
         print(c);
-    }
+    } */
     return CHAR_LITERAL;
 }
 
