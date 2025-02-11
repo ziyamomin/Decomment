@@ -43,9 +43,6 @@ enum Statetype handleStartState(int c, int *line_number) {
 }
 
 enum Statetype handleForwardSlashState(int c, int *line_number) {
-    if(c == EOF) {
-        print('/');
-    }
     if (c == '*') {
         print(' ');
         return IN_COMMENT;
